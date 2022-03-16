@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+	<div class="wrap-widget">
+		<div class="column usd">
+			<div class="title-col">USD</div>
+			<div class="price-data">
+				<img src="parser_files/preload.gif" class="img-preload" alt="">
+			</div>
+			<div class="price-data_change"></div>
+		</div>
+		<div class="column brent " >
+			<div class="title-col">Brent Oil</div>
+			<div class="price-data">
+				<img src="parser_files/preload.gif" class="img-preload" alt="">
+			</div>
+			<div class="price-data_change"></div>
+		</div>
+		<div class="column rts">
+			<div class="title-col">RTS</div>
+			<div class="price-data">
+				<img src="parser_files/preload.gif" class="img-preload" alt="">
+			</div>
+			<div class="price-data_change"></div>
+		</div>
+	</div>
+
+	<script>
+		jQuery(document).ready(function($) {
+			function parser_start() {
+				$.ajax({
+		            type: "POST",
+		            url: 'parser_files/get_data.php',
+		            success: function(response)
+		            {
+		            	$('.img-preload').hide();
+		                var jsonData = JSON.parse(response);
+		                console.log(jsonData);
+		 				// set USD 
+		 				var usd_1 = jsonData.USD.price;
+		                var usd_2 = jsonData.USD.change_price;
+		 				
+		 				$('.usd .price-data').text(usd_1);
+
+		 				if (usd_2.charAt(0) == '+') {
+		 					$('.usd .price-data_change').text(usd_2 + '▲');
+		 					$('.usd .price-data_change').addClass('up_price');
+		                }else if(usd_2.charAt(0) == '-') {
+		                	$('.usd .price-data_change').text(usd_2 + '▼');
+		                	$('.usd .price-data_change').addClass('down_price');
+		                }else{
+		                	$('.usd .price-data_change').text(usd_2);
+		                }
+
+		 				// set Brent Oil
+		 				var brent_1 = jsonData.BRENT.price;
+		                var brent_2 = jsonData.BRENT.change_price;
+		 				
+		                if (brent_2.charAt(0) == '+') {
+		 					$('.brent .price-data_change').text(brent_2 + '▲');
+		 					$('.brent .price-data_change').addClass('up_price');
+		                }else if(brent_2.charAt(0) == '-') {
+		                	$('.brent .price-data_change').text(brent_2 + '▼');
+		                	$('.brent .price-data_change').addClass('down_price');
+		                }else{
+		                	$('.brent .price-data_change').text(brent_2);
+		                }
+		 				$('.brent .price-data').text(brent_1);
+
+		 				// set RTSI
+		 				var rts_1 = jsonData.RTSI.price;
+		                var rts_2 = jsonData.RTSI.change_price;
+
+		 				
+		 				$('.rts .price-data').text(rts_1);
+		 				if (rts_2.charAt(0) == '+') {
+		 					$('.rts .price-data_change').text(rts_2 + '▲');
+		 					$('.rts .price-data_change').addClass('up_price');
+		                }else if(rts_2.charAt(0) == '-') {
+		                	$('.rts .price-data_change').text(rts_2 + '▼');
+		                	$('.rts .price-data_change').addClass('down_price');
+		                }else{
+		                	$('.rts .price-data_change').text(rts_2);
+		                }
+
+		           }
+		       });
+			};
+			parser_start();
+
+			// Время обновления
+			var	timeReload = 60000;
+			// Запуск таймера
+			setInterval(() => parser_start(), timeReload);
+		});
+	</script>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+		.wrap-widget{
+			font-family: 'Roboto', sans-serif;
+			display: grid;
+			max-width: 960px;
+			width: 100%;
+			margin: 0 auto;
+			text-align: center;
+			grid-template-columns: repeat(auto-fit,minmax(100px,1fr));
+			margin-top: 100px;
+		}
+		.column{
+			text-transform: uppercase;
+			padding: 0 15px;
+		}
+		.wrap-widget .column:nth-child(1){
+			border-right: 1px solid #e3e0e0;
+		}
+		.wrap-widget .column:nth-child(2){
+			border-right: 1px solid #e3e0e0;
+		}
+		.title-col{
+			padding-bottom: 5px;
+			font-size: 12px;
+		}
+		.price-data_change{
+			font-size: 14px;
+			color: #e3e0e0;;
+		}
+		.down_price{
+			color: red;
+		}
+		.up_price{
+			color: green;
+		}
+		.img-preload{
+			width: 18px;
+		}
+	</style>
+</body>
+</html>
